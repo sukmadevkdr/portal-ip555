@@ -10,38 +10,43 @@
     <link rel="icon" type="image/png" href="https://ibb.co.com/Xxk0MzGZ">
 
     <style>
-        html,
-        body {
+        *,
+        *::before,
+        *::after {
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: #0f172a;
-            position: relative;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            overflow: hidden !important;
+            background: #FFFFFF !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
         }
 
         /* 
-         * Trik Otomatis Menyembunyikan Peringatan Header Google:
-         * Banner "Aplikasi ini dibuat oleh pengguna Google Apps Script" memiliki tinggi ~38px.
-         * Dengan top: -38px dan height: calc(100% + 38px), banner google otomatis terpotong 
-         * ke luar layar sehingga tampilan portal menjadi 100% bersih tanpa peringatan Google.
+         * Iframe responsif penuh 100vw & 100vh tanpa pergeseran offset (anti terpotong di sisi atas & kiri)
          */
         iframe {
-            position: absolute;
-            top: -38px;
-            left: 0;
-            width: 100%;
-            height: calc(100% + 38px);
-            border: none;
-            display: block;
-        }
-
-        @media (max-width: 576px) {
-            iframe {
-                top: -46px;
-                height: calc(100% + 46px);
-            }
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            border: 0 !important;
+            outline: none !important;
+            display: block !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
     </style>
 </head>
