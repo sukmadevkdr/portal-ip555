@@ -18,24 +18,70 @@
             height: 100%;
             overflow: hidden;
             background: #0f172a;
+            position: relative;
         }
 
+        /* 
+         * Trik Otomatis Menyembunyikan Peringatan Header Google:
+         * Banner "Aplikasi ini dibuat oleh pengguna Google Apps Script" memiliki tinggi ~38px.
+         * Dengan top: -38px dan height: calc(100% + 38px), banner google otomatis terpotong 
+         * ke luar layar sehingga tampilan portal menjadi 100% bersih tanpa peringatan Google.
+         */
         iframe {
+            position: absolute;
+            top: -38px;
+            left: 0;
             width: 100%;
-            height: 100%;
+            height: calc(100% + 38px);
             border: none;
             display: block;
+        }
+
+        @media (max-width: 576px) {
+            iframe {
+                top: -46px;
+                height: calc(100% + 46px);
+            }
         }
     </style>
 </head>
 
 <body>
-    <!-- Iframe dengan izin Kamera & Layar Penuh -->
+    <!-- Iframe dengan integrasi izin Kamera, Clipboard & Fullscreen (Delegasi Penuh tanda *) -->
     <iframe
         src="https://script.google.com/macros/s/AKfycbx_qw2il9Rm20mM9ILAaAiPBgzLjcTbQX7MzoJhzCmr-1_Tr43ifkH7clgg1zsB_NTp/exec"
-        allow="camera *; microphone *; clipboard-read *; clipboard-write *; fullscreen *; display-capture *"
+        allow="camera *; microphone *; clipboard-read *; clipboard-write *; fullscreen *; display-capture *" 
         title="Portal IP 555">
     </iframe>
+
+    <script>
+        // Dukungan Hardware & Gesture Back Button di Mobile/PWA
+        window.addEventListener('load', function () {
+            try {
+                history.pushState({ app: 'portal_ip555' }, '');
+            } catch (e) { }
+        });
+
+        window.addEventListener('popstate', function (e) {
+            var iframe = document.querySelector('iframe');
+            if (iframe && iframe.contentWindow) {
+                // Teruskan sinyal Back fisik HP ke dalam aplikasi Google Apps Script
+                iframe.contentWindow.postMessage({ type: 'MOBILE_BACK_PRESS' }, '*');
+            }
+            try {
+                history.pushState({ app: 'portal_ip555' }, '');
+            } catch (err) { }
+        });
+
+        // Terima sinyal auto close jika pengguna logout dari dashboard utama
+        window.addEventListener('message', function (event) {
+            if (event.data && event.data.type === 'APP_AUTO_CLOSE') {
+                try {
+                    window.close();
+                } catch (e) { }
+            }
+        });
+    </script>
 </body>
 
 </html>
