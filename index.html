@@ -12,7 +12,7 @@
     <style>
         html,
         body {
-            margin: 30;
+            margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
@@ -22,26 +22,18 @@
         }
 
         /* 
-         * Trik Otomatis Menyembunyikan Peringatan Header Google:
-         * Banner "Aplikasi ini dibuat oleh pengguna Google Apps Script" memiliki tinggi ~38px.
-         * Dengan top: -38px dan height: calc(100% + 38px), banner google otomatis terpotong 
-         * ke luar layar sehingga tampilan portal menjadi 100% bersih tanpa peringatan Google.
+         * Iframe Responsif Layar Penuh (Full Viewport):
+         * Menampilkan tampilan aplikasi secara utuh dari puncak atas (top: 0) hingga bawah (height: 100%)
+         * sehingga seluruh navbar, tombol toggle sidebar mobile, logo, dan konten tidak terpotong.
          */
         iframe {
             position: absolute;
-            top: -38px;
+            top: 0;
             left: 0;
             width: 100%;
-            height: calc(100% + 38px);
+            height: 100%;
             border: none;
             display: block;
-        }
-
-        @media (max-width: 576px) {
-            iframe {
-                top: -46px;
-                height: calc(100% + 46px);
-            }
         }
     </style>
 </head>
