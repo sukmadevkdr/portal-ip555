@@ -3,11 +3,23 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <title>Sistem Informasi Manajemen Terpadu IP 555</title>
 
-    <!-- Favicon Logo Resmi IP 555 -->
-    <link rel="icon" type="image/png" href="https://ibb.co.com/Xxk0MzGZ">
+    <!-- PWA Web App Manifest (Syarat Wajib Google Chrome untuk tombol "Install App / Pasang Aplikasi") -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Konfigurasi PWA untuk Android Chrome & iOS Safari -->
+    <meta name="theme-color" content="#D32F2F">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="IP 555">
+
+    <!-- Favicon & Apple Touch Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
 
     <style>
         *,
@@ -33,9 +45,6 @@
             bottom: 0 !important;
         }
 
-        /* 
-         * Iframe responsif penuh 100vw & 100vh tanpa pergeseran offset (anti terpotong di sisi atas & kiri)
-         */
         iframe {
             position: fixed !important;
             top: 0 !important;
@@ -52,15 +61,32 @@
 </head>
 
 <body>
-    <!-- Iframe dengan integrasi izin Kamera, Clipboard & Fullscreen (Delegasi Penuh tanda *) -->
+    <!-- 
+      Iframe dengan sintaks Permissions Policy Chromium & W3C standar:
+      allow="camera; microphone; display-capture; fullscreen; geolocation; clipboard-read; clipboard-write"
+      Mendelegasikan izin kamera (WebRTC) langsung ke dalam Google Apps Script tanpa diblokir peramban.
+    -->
     <iframe
-        src="https://script.google.com/macros/s/AKfycbxhObDVpoZpx9NRMvz4kBOw0wMusfj6CF5YrZGJtWheZ7h9rK01djWNu_3yKbALtqrJ/exec"
-        allow="camera *; microphone *; clipboard-read *; clipboard-write *; fullscreen *; display-capture *" 
+        id="appIframe"
+        src="https://script.google.com/macros/s/AKfycbw0aMWWEy5pz4khvbiwOV73GH5R7DzDNNgMbhkdlSpIBkl70nbsfdDSgZbIbdLV3Er3/exec"
+        allow="camera; microphone; display-capture; fullscreen; geolocation; clipboard-read; clipboard-write"
+        allowfullscreen="true"
         title="Portal IP 555">
     </iframe>
 
     <script>
-        // Dukungan Hardware & Gesture Back Button di Mobile/PWA
+        // 1. Registrasi Service Worker PWA (Wajib agar Chrome menampilkan prompt "Install Aplikasi")
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('./sw.js').then(function (reg) {
+                    console.log('IP 555 PWA Service Worker Registered:', reg.scope);
+                }).catch(function (err) {
+                    console.warn('PWA Service Worker Registration Failed:', err);
+                });
+            });
+        }
+
+        // 2. Dukungan Hardware & Gesture Back Button di Mobile/PWA
         window.addEventListener('load', function () {
             try {
                 history.pushState({ app: 'portal_ip555' }, '');
@@ -68,9 +94,8 @@
         });
 
         window.addEventListener('popstate', function (e) {
-            var iframe = document.querySelector('iframe');
+            var iframe = document.getElementById('appIframe');
             if (iframe && iframe.contentWindow) {
-                // Teruskan sinyal Back fisik HP ke dalam aplikasi Google Apps Script
                 iframe.contentWindow.postMessage({ type: 'MOBILE_BACK_PRESS' }, '*');
             }
             try {
@@ -78,7 +103,7 @@
             } catch (err) { }
         });
 
-        // Terima sinyal auto close jika pengguna logout dari dashboard utama
+        // 3. Terima sinyal auto close jika logout
         window.addEventListener('message', function (event) {
             if (event.data && event.data.type === 'APP_AUTO_CLOSE') {
                 try {
